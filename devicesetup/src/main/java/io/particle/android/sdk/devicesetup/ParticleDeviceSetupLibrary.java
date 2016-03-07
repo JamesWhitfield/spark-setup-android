@@ -87,8 +87,10 @@ public class ParticleDeviceSetupLibrary {
      * Start the device setup process.
      */
     public static void startDeviceSetup(Context ctx) {
+
         ctx.startActivity(new Intent(ctx, GetReadyActivity.class));
     }
+
 
 
     // FIXME: allow the SDK consumer to optionally pass in some kind of dynamic intent builder here

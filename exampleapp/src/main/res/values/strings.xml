@@ -6,4 +6,14 @@
 
     <!-- Enable full logging in the cloud SDK -->
     <string name="http_log_level">FULL</string>
+    <string name="setup_preferences">setupPreferences</string>
+    <string name="setup_mode">setup_mode</string>
+
+    <string name="wifi_list_header_group_text">Choose your {device_name}s</string>
+    <string name="get_ready_group_text"><![CDATA[\n
+\u2022 Please power on your {device_name}s by plugging them in.\n\n
+\u2022 All indicator lights should blink {indicator_light_setup_color_name}. If a {device_name} has been set up before, hold the {setup_button_identifier} for 3 seconds to set up again.\n\n
+\u2022 Make sure your Android device is connected to the internet.\n\n
+\u2022 Tap the READY button to proceed.]]></string>
+    <string name="get_ready_group_title_text">Time to set up your {device_name}s!</string>
 </resources>

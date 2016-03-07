@@ -8,14 +8,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 // FIXME: Statically defined, global, mutable state...  refactor this thing into oblivion soon.
 public class DeviceSetupState {
 
-    static final Set<String> claimedDeviceIds = new ConcurrentSkipListSet<>();
+    public static final Set<String> claimedDeviceIds = new ConcurrentSkipListSet<>();
     public static volatile String previouslyConnectedWifiNetwork;
-    static volatile String claimCode;
-    static volatile PublicKey publicKey;
-    static volatile String deviceToBeSetUpId;
-    static volatile boolean deviceNeedsToBeClaimed = true;
+    public static volatile String claimCode;
+    public static volatile PublicKey publicKey;
+    public static volatile String deviceToBeSetUpId;
+    public static volatile boolean deviceNeedsToBeClaimed = true;
 
-    static void reset() {
+    public static void reset() {
         claimCode = null;
         claimedDeviceIds.clear();
         publicKey = null;

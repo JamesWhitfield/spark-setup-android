@@ -1,14 +1,12 @@
-package io.particle.android.sdk.devicesetup.ui;
+package io.particle.devicesetup.exampleapp;
 
-import android.Manifest.permission;
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
@@ -19,35 +17,27 @@ import java.util.Arrays;
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
 import io.particle.android.sdk.cloud.ParticleCloudException;
-import io.particle.android.sdk.cloud.Responses.ClaimCodeResponse;
-import io.particle.android.sdk.devicesetup.R;
-import io.particle.android.sdk.ui.BaseActivity;
+import io.particle.android.sdk.cloud.Responses;
+import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
+import io.particle.android.sdk.devicesetup.ui.DiscoverDeviceActivity;
+import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
+import io.particle.android.sdk.devicesetup.ui.PermissionsFragment;
 import io.particle.android.sdk.utils.Async;
-import io.particle.android.sdk.utils.Async.AsyncApiWorker;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
-import io.particle.android.sdk.utils.TLog;
-import io.particle.android.sdk.utils.ui.ParticleUi;
-import io.particle.android.sdk.utils.ui.Toaster;
 import io.particle.android.sdk.utils.ui.Ui;
 import io.particle.android.sdk.utils.ui.WebViewActivity;
 
 import static io.particle.android.sdk.utils.Py.truthy;
 
-
-public class GetReadyActivity extends BaseActivity implements PermissionsFragment.Client {
-
-    protected static final TLog log = TLog.get(GetReadyActivity.class);
-
-    protected ParticleCloud sparkCloud;
-    protected SoftAPConfigRemover softAPConfigRemover;
-
-    protected AsyncApiWorker<ParticleCloud, ClaimCodeResponse> claimCodeWorker;
-
+/**
+ * Created by jwhit on 07/03/2016.
+ */
+public class GetGroupReadyActivity extends GetReadyActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_get_ready);
+        setContentView(R.layout.activity_get_group_ready);
 
         sparkCloud = ParticleCloud.get(this);
         softAPConfigRemover = new SoftAPConfigRemover(this);
@@ -56,7 +46,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
 
         PermissionsFragment.ensureAttached(this);
 
-        Ui.findView(this, R.id.action_im_ready).setOnClickListener(
+        Ui.findView(this, io.particle.android.sdk.devicesetup.R.id.action_im_ready).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -64,41 +54,27 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                     }
                 }
         );
-        Ui.setTextFromHtml(this, R.id.action_troubleshooting, R.string.troubleshooting)
+        Ui.setTextFromHtml(this, io.particle.android.sdk.devicesetup.R.id.action_troubleshooting, io.particle.android.sdk.devicesetup.R.string.troubleshooting)
                 .setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        Uri uri = Uri.parse(v.getContext().getString(R.string.troubleshooting_uri));
+                        Uri uri = Uri.parse(v.getContext().getString(io.particle.android.sdk.devicesetup.R.string.troubleshooting_uri));
                         startActivity(WebViewActivity.buildIntent(v.getContext(), uri));
                     }
                 });
 
-        Ui.setText(this, R.id.get_ready_text,
-                Phrase.from(this, R.string.get_ready_text)
-                        .put("device_name", getString(R.string.device_name))
-                        .put("indicator_light_setup_color_name", getString(R.string.listen_mode_led_color_name))
-                        .put("setup_button_identifier", getString(R.string.mode_button_name))
+        Ui.setText(this, R.id.get_ready_group_text,
+                Phrase.from(this, R.string.get_ready_group_text)
+                        .put("device_name", getString(io.particle.android.sdk.devicesetup.R.string.device_name))
+                        .put("indicator_light_setup_color_name", getString(io.particle.android.sdk.devicesetup.R.string.listen_mode_led_color_name))
+                        .put("setup_button_identifier", getString(io.particle.android.sdk.devicesetup.R.string.mode_button_name))
                         .format());
 
-        Ui.setText(this, R.id.get_ready_text_title,
-                Phrase.from(this, R.string.get_ready_title_text)
-                        .put("device_name", getString(R.string.device_name))
+        Ui.setText(this, R.id.get_ready_group_text_title,
+                Phrase.from(this, R.string.get_ready_group_title_text)
+                        .put("device_name", getString(io.particle.android.sdk.devicesetup.R.string.device_name))
                         .format());
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        log.i(this.getClass().getSimpleName() + ".onStart()");
-        softAPConfigRemover.removeAllSoftApConfigs();
-        softAPConfigRemover.reenableWifiNetworks();
-
-        if (sparkCloud.getLoggedInUsername() == null) {
-            startLoginActivity();
-            finish();
-        }
-
     }
 
     protected void onReadyButtonClicked() {
@@ -106,14 +82,14 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         DeviceSetupState.reset();
         showProgress(true);
         final Context ctx = this;
-        claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, ClaimCodeResponse>() {
+        claimCodeWorker = Async.executeAsync(sparkCloud, new Async.ApiWork<ParticleCloud, Responses.ClaimCodeResponse>() {
             @Override
-            public ClaimCodeResponse callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
+            public Responses.ClaimCodeResponse callApi(ParticleCloud sparkCloud) throws ParticleCloudException {
                 Resources res = ctx.getResources();
-                if (res.getBoolean(R.bool.organization)) {
+                if (res.getBoolean(io.particle.android.sdk.devicesetup.R.bool.organization)) {
                     return sparkCloud.generateClaimCodeForOrg(
-                            res.getString(R.string.organization_slug),
-                            res.getString(R.string.product_slug));
+                            res.getString(io.particle.android.sdk.devicesetup.R.string.organization_slug),
+                            res.getString(io.particle.android.sdk.devicesetup.R.string.product_slug));
                 } else {
                     return sparkCloud.generateClaimCode();
                 }
@@ -126,7 +102,7 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
             }
 
             @Override
-            public void onSuccess(ClaimCodeResponse result) {
+            public void onSuccess(Responses.ClaimCodeResponse result) {
                 log.d("Claim code generated: " + result.claimCode);
 
                 DeviceSetupState.claimCode = result.claimCode;
@@ -154,11 +130,11 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                     }
 
                     String errorMsg = String.format("Sorry, you must be logged in as a %s customer.",
-                            getString(R.string.brand_name));
-                    new AlertDialog.Builder(GetReadyActivity.this)
-                            .setTitle(R.string.access_denied)
+                            getString(io.particle.android.sdk.devicesetup.R.string.brand_name));
+                    new AlertDialog.Builder(GetGroupReadyActivity.this)
+                            .setTitle(io.particle.android.sdk.devicesetup.R.string.access_denied)
                             .setMessage(errorMsg)
-                            .setPositiveButton(R.string.ok, new OnClickListener() {
+                            .setPositiveButton(io.particle.android.sdk.devicesetup.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -176,14 +152,14 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
                     }
 
                     // FIXME: we could just check the internet connection here ourselves...
-                    String errorMsg = getString(R.string.get_ready_could_not_connect_to_cloud);
+                    String errorMsg = getString(io.particle.android.sdk.devicesetup.R.string.get_ready_could_not_connect_to_cloud);
                     if (error.getMessage() != null) {
                         errorMsg = errorMsg + "\n\n" + error.getMessage();
                     }
-                    new AlertDialog.Builder(GetReadyActivity.this)
-                            .setTitle(R.string.error)
+                    new AlertDialog.Builder(GetGroupReadyActivity.this)
+                            .setTitle(io.particle.android.sdk.devicesetup.R.string.error)
                             .setMessage(errorMsg)
-                            .setPositiveButton(R.string.ok, new OnClickListener() {
+                            .setPositiveButton(io.particle.android.sdk.devicesetup.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -195,36 +171,15 @@ public class GetReadyActivity extends BaseActivity implements PermissionsFragmen
         });
     }
 
-    private void startLoginActivity() {
-        startActivity(new Intent(this, LoginActivity.class));
-    }
-
-    protected void showProgress(boolean show) {
-        ParticleUi.showParticleButtonProgress(this, R.id.action_im_ready, show);
-    }
-
     private void moveToDeviceDiscovery() {
-        if (PermissionsFragment.hasPermission(this, permission.ACCESS_COARSE_LOCATION)) {
-            startActivity(new Intent(GetReadyActivity.this, DiscoverDeviceActivity.class));
+        if (PermissionsFragment.hasPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            startActivity(new Intent(GetGroupReadyActivity.this, DiscoverGroupDeviceActivity.class));
         } else {
-            PermissionsFragment.get(this).ensurePermission(permission.ACCESS_COARSE_LOCATION);
+            PermissionsFragment.get(this).ensurePermission(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
     }
 
-    @Override
-    public void onUserAllowedPermission(String permission) {
-        moveToDeviceDiscovery();
+    private void startLoginActivity() {
+        startActivity(new Intent(this, LoginActivity.class));
     }
-
-    @Override
-    public void onUserDeniedPermission(String permission) {
-        Toaster.s(this, "Location permission denied, cannot start setup");
-    }
-
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionsFragment.get(this).onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
 }
