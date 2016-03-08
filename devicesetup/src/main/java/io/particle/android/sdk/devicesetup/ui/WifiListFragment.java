@@ -125,7 +125,7 @@ public class WifiListFragment<T extends WifiNetwork> extends ListFragment
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-
+//todo here
         T selectedNetwork = adapter.getItem(position);
         if (null != client) {
             client.onNetworkSelected(selectedNetwork);

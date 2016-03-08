@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.particle.android.sdk.accountsetup.LoginActivity;
 import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
 import io.particle.android.sdk.devicesetup.R;
 import io.particle.android.sdk.devicesetup.commands.CommandClient;
 import io.particle.android.sdk.devicesetup.commands.DeviceIdCommand;
@@ -86,7 +87,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
         DeviceSetupState.previouslyConnectedWifiNetwork = WiFi.getCurrentlyConnectedSSID(this);
 
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        sparkCloud = ParticleCloud.get(this);
+        sparkCloud = ParticleCloudSDK.getCloud();
 
         wifiListFragment = Ui.findFrag(this, R.id.wifi_list_fragment);
         ConnectToApFragment.ensureAttached(this);
@@ -200,6 +201,7 @@ public class DiscoverDeviceActivity extends RequiresWifiScansActivity
     }
 
     private void connectToSoftAp(WifiConfiguration config) {
+        //TODO here
         discoverProcessAttempts++;
         softAPConfigRemover.onSoftApConfigured(config.SSID);
         ConnectToApFragment.get(this).connectToAP(config, CONNECT_TO_DEVICE_TIMEOUT_MILLIS);

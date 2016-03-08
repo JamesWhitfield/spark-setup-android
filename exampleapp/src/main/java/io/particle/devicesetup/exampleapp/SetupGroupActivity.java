@@ -26,9 +26,9 @@ public class SetupGroupActivity extends AppCompatActivity implements PasswordEnt
 
     public interface ConnectingInterface{
 
-        void onApConnectionSuccessful();
+        void onApConnectionSuccessful(WifiConfiguration config);
 
-        void onApConnectionFailed();
+        void onApConnectionFailed(WifiConfiguration config);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,11 +104,11 @@ public class SetupGroupActivity extends AppCompatActivity implements PasswordEnt
 
     @Override
     public void onApConnectionSuccessful(WifiConfiguration config) {
-        connectingInterface.onApConnectionSuccessful();
+        connectingInterface.onApConnectionSuccessful(config);
     }
 
     @Override
     public void onApConnectionFailed(WifiConfiguration config) {
-        connectingInterface.onApConnectionFailed();
+        connectingInterface.onApConnectionFailed(config);
     }
 }
