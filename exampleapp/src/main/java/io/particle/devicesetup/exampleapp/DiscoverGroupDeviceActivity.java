@@ -11,7 +11,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
+import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.Toast;
 
 import com.squareup.phrase.Phrase;
 
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +34,7 @@ import io.particle.android.sdk.devicesetup.commands.PublicKeyCommand;
 import io.particle.android.sdk.devicesetup.commands.SetCommand;
 import io.particle.android.sdk.devicesetup.loaders.WifiScanResultLoader;
 import io.particle.android.sdk.devicesetup.model.ScanResultNetwork;
+import io.particle.android.sdk.devicesetup.model.WifiNetwork;
 import io.particle.android.sdk.devicesetup.setupsteps.SetupStepException;
 import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
 import io.particle.android.sdk.devicesetup.ui.DeviceSetupState;
@@ -38,7 +42,6 @@ import io.particle.android.sdk.devicesetup.ui.DiscoverDeviceActivity;
 import io.particle.android.sdk.devicesetup.ui.GetReadyActivity;
 import io.particle.android.sdk.devicesetup.ui.RequiresWifiScansActivity;
 import io.particle.android.sdk.devicesetup.ui.SelectNetworkActivity;
-import io.particle.android.sdk.devicesetup.ui.WifiListFragment;
 import io.particle.android.sdk.utils.Crypto;
 import io.particle.android.sdk.utils.EZ;
 import io.particle.android.sdk.utils.SoftAPConfigRemover;
@@ -53,7 +56,7 @@ import static io.particle.android.sdk.utils.Py.truthy;
  * Created by jwhit on 07/03/2016.
  */
 public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
-        implements WifiListFragment.Client<ScanResultNetwork>,
+        implements WifiListGroupFragment.Client<ScanResultNetwork>,
         ConnectToApFragment.Client {
 
 
@@ -69,7 +72,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
     private DiscoverProcessWorker discoverProcessWorker;
     private SoftAPConfigRemover softAPConfigRemover;
 
-    private WifiListFragment wifiListFragment;
+    private WifiListGroupFragment wifiListGroupFragment;
     private ProgressDialog connectToApSpinnerDialog;
 
     private AsyncTask<Void, Void, SetupStepException> connectToApTask;
@@ -95,7 +98,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         sparkCloud = ParticleCloud.get(this);
 
-        wifiListFragment = Ui.findFrag(this, io.particle.android.sdk.devicesetup.R.id.wifi_list_fragment);
+        wifiListGroupFragment = Ui.findFrag(this, R.id.wifi_list_group_fragment);
         ConnectToApFragment.ensureAttached(this);
 
         resetWorker();
@@ -140,6 +143,21 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
             }
         });
 
+        Ui.findView(this, R.id.action_group_setup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                log.i("Group setup, Start group setup");
+                int j= 0;
+                j = wifiListGroupFragment.getListView().getCheckedItemCount();
+                if(j > 0){
+                    Toast.makeText(getApplicationContext(),"Setting up " + j + " devices",Toast.LENGTH_SHORT).show();
+                    createWifiConfigArray(wifiListGroupFragment.getListView().getCheckedItemPositions());
+                    startActivity(new Intent(getApplicationContext(),SelectNetworkForGroupActivity.class));
+                }else{
+                    Toast.makeText(getApplicationContext(),"Please select devices",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
@@ -164,6 +182,19 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
         isResumed = false;
     }
 
+    private void createWifiConfigArray(SparseBooleanArray checkedItemPositions){
+        ArrayList<WifiNetwork> wifiNetworkArrayList = new ArrayList<>();
+        for (int i = 0; i < checkedItemPositions.size(); i++) {
+            int lpos = checkedItemPositions.keyAt(i);
+            boolean ischecked = checkedItemPositions.get(lpos);
+            if(ischecked){
+                WifiNetwork wifiNetwork = (WifiNetwork) wifiListGroupFragment.getListView().getAdapter().getItem(checkedItemPositions.keyAt(i));
+                wifiNetworkArrayList.add(wifiNetwork);
+            }
+        }
+        ((ApplicationController)getApplication()).photonSetupGroup.addAll(wifiNetworkArrayList);
+    }
+
     private void resetWorker() {
         discoverProcessWorker = new DiscoverProcessWorker(
                 CommandClient.newClientUsingDefaultSocketAddress());
@@ -180,7 +211,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
                         dialog.dismiss();
                         log.i("Enabling Wi-Fi at the user's request.");
                         wifiManager.setWifiEnabled(true);
-                        wifiListFragment.scanAsync();
+                        wifiListGroupFragment.scanAsync();
                     }
                 })
                 .setNegativeButton(io.particle.android.sdk.devicesetup.R.string.exit_setup, new DialogInterface.OnClickListener() {
@@ -247,7 +278,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
     }
 
     private void showProgressDialog() {
-        wifiListFragment.stopAggroLoading();
+        wifiListGroupFragment.stopAggroLoading();
 
         String msg = Phrase.from(this, io.particle.android.sdk.devicesetup.R.string.connecting_to_soft_ap)
                 .put("device_name", getString(io.particle.android.sdk.devicesetup.R.string.device_name))
@@ -263,7 +294,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
     }
 
     private void hideProgressDialog() {
-        wifiListFragment.startAggroLoading();
+        wifiListGroupFragment.startAggroLoading();
         if (connectToApSpinnerDialog != null) {
             if (!isFinishing()) {
                 connectToApSpinnerDialog.dismiss();
@@ -279,7 +310,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
             return;
         }
 
-        wifiListFragment.stopAggroLoading();
+        wifiListGroupFragment.stopAggroLoading();
         // FIXME: verify first that we're still connected to the intended network
         if (!canStartProcessAgain()) {
             hideProgressDialog();

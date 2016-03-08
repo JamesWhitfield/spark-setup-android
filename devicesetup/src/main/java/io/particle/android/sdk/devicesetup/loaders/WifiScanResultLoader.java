@@ -107,7 +107,8 @@ public class WifiScanResultLoader extends BetterAsyncTaskLoader<Set<ScanResultNe
 
     private Predicate<ScanResult> ssidStartsWithProductName = new Predicate<ScanResult>() {
 
-        final String softApPrefix = getPrefix();
+//        final String softApPrefix = getPrefix();
+        final String softApPrefix = "";
 
         @Override
         public boolean apply(ScanResult input) {

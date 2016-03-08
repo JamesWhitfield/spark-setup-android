@@ -26,12 +26,18 @@
             android:text="@string/wifi_list_header_text"/>
 
         <fragment
-            android:id="@+id/wifi_list_fragment"
-            android:name="io.particle.android.sdk.devicesetup.ui.WifiListFragment"
+            android:id="@+id/wifi_list_group_fragment"
+            android:name="io.particle.devicesetup.exampleapp.WifiListGroupFragment"
             android:layout_width="match_parent"
             android:layout_height="0px"
             android:layout_weight="1"
             tools:layout="@layout/row_wifi_scan_result"/>
+
+        <Button
+            android:id="@+id/action_group_setup"
+            style="@style/SparkButton"
+            android:layout_marginBottom="12dp"
+            android:text="@string/button_group_setup_process"/>
 
         <TextView
             android:id="@+id/msg_device_not_listed"

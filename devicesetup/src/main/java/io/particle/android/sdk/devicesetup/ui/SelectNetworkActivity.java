@@ -20,7 +20,7 @@ import io.particle.android.sdk.utils.ui.Ui;
 public class SelectNetworkActivity extends RequiresWifiScansActivity
         implements WifiListFragment.Client<ScanAPCommandResult> {
 
-    private WifiListFragment wifiListFragment;
+    protected WifiListFragment wifiListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

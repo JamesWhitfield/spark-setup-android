@@ -3,6 +3,7 @@
     package="io.particle.devicesetup.exampleapp" >
 
     <application
+        android:name=".ApplicationController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,6 +22,12 @@
 
         <!-- All of the following are from the device setup lib, and must be present in your app's
         manifest or you will not go to space today. -->
+        <activity
+            android:name=".SetupGroupActivity"
+            android:label="@string/title_activity_setup_group"
+            android:screenOrientation="portrait"
+            android:theme="@style/ParticleSetupTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".DiscoverGroupDeviceActivity"
             android:label="@string/title_activity_discover_device"
