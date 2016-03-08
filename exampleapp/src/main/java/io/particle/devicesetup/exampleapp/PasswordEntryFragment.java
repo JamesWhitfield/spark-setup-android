@@ -55,7 +55,7 @@ public class PasswordEntryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        View view = inflater.inflate(R.layout.activity_password_entry, container, false);
+        View view = inflater.inflate(R.layout.fragment_password_entry, container, false);
 
 
         etPasswordBox = (EditText) view.findViewById( io.particle.android.sdk.devicesetup.R.id.password);

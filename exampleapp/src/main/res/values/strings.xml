@@ -17,4 +17,6 @@
 \u2022 Tap the READY button to proceed.]]></string>
     <string name="get_ready_group_title_text">Time to set up your {device_name}s!</string>
     <string name="title_activity_setup_group">Group setup</string>
+    <string name="title_select_network_group" >Group Network select</string>
+    <string name="title_manual_network_group">Manual network name</string>
 </resources>
