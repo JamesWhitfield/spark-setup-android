@@ -8,12 +8,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
+import io.particle.android.sdk.devicesetup.ui.RequiresWifiScansActivity;
 import io.particle.android.sdk.utils.WiFi;
 
 /**
  * Created by jwhit on 08/03/2016.
  */
-public class SetupGroupActivity extends AppCompatActivity implements PasswordEntryFragment.SetNetworkPassword, ConnectToApFragment.Client{
+public class SetupGroupActivity extends RequiresWifiScansActivity implements PasswordEntryFragment.SetNetworkPassword{
 
     private static final String PASSWORD_FRAMENT_TAG = "password";
     private static final String CONNECT_FRAMENT_TAG = "connect";
@@ -22,14 +23,9 @@ public class SetupGroupActivity extends AppCompatActivity implements PasswordEnt
     Fragment passwordFragment;
     ConnectingGroupFragment connectingGroupFragment;
     String password;
-    private ConnectingInterface connectingInterface;
 
-    public interface ConnectingInterface{
 
-        void onApConnectionSuccessful(WifiConfiguration config);
 
-        void onApConnectionFailed(WifiConfiguration config);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +62,6 @@ public class SetupGroupActivity extends AppCompatActivity implements PasswordEnt
                 fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 connectingGroupFragment = ConnectingGroupFragment.newInstance();
-                connectingInterface = connectingGroupFragment;
                 fragmentTransaction.add(R.id.fragmentContainer, connectingGroupFragment, CONNECT_FRAMENT_TAG);
                 fragmentTransaction.commit();
             }
@@ -85,7 +80,6 @@ public class SetupGroupActivity extends AppCompatActivity implements PasswordEnt
 
 
         connectingGroupFragment = ConnectingGroupFragment.newInstance(password);
-        connectingInterface = connectingGroupFragment;
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, connectingGroupFragment);
         transaction.addToBackStack(null);
@@ -102,13 +96,5 @@ public class SetupGroupActivity extends AppCompatActivity implements PasswordEnt
 
     }
 
-    @Override
-    public void onApConnectionSuccessful(WifiConfiguration config) {
-        connectingInterface.onApConnectionSuccessful(config);
-    }
 
-    @Override
-    public void onApConnectionFailed(WifiConfiguration config) {
-        connectingInterface.onApConnectionFailed(config);
-    }
 }

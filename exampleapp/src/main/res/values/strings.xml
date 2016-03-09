@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Example app</string>
+    <string name="app_name">Bulk Setup</string>
     <string name="button_group_setup_process">Begin setup</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

@@ -150,7 +150,6 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
                 int j= 0;
                 j = wifiListGroupFragment.getListView().getCheckedItemCount();
                 if(j > 0){
-                    Toast.makeText(getApplicationContext(),"Setting up " + j + " devices",Toast.LENGTH_SHORT).show();
                     createWifiConfigArray(wifiListGroupFragment.getListView().getCheckedItemPositions());
                     startActivity(new Intent(getApplicationContext(),SelectNetworkForGroupActivity.class));
                 }else{

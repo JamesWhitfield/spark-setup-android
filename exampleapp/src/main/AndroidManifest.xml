@@ -5,7 +5,7 @@
     <application
         android:name=".ApplicationController"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/play_store_512px_icon"
         android:label="@string/app_name"
         android:theme="@style/ParticleSetupTheme" >
         <activity

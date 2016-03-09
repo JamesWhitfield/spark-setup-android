@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tvconfig"
@@ -10,15 +15,39 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:text="Current actions"
-        android:id="@+id/tvCurrentAction"
+        android:text="Current Device"
+        android:id="@+id/tvCurrentDevice"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:text="Results"
-        android:id="@+id/tvResults"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvconfig"
+        />
+    <ProgressBar
+        android:id="@+id/pbProgress"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@+id/tvCurrentDevice"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        />
 
 
+
+        <ListView
+            android:id="@+id/lvResults"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/pbProgress"
+            android:layout_above="@+id/btnCancel" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/SparkButton"
+        android:text="@string/cancel"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+
+    </RelativeLayout>
 </LinearLayout>

@@ -21,7 +21,8 @@ public class ManualNetworkEntryGroupActivity extends ManualNetworkEntryActivity 
     @Override
     public void onConnectClicked(View view) {
         String ssid = Ui.getText(this, io.particle.android.sdk.devicesetup.R.id.network_name, true);
-
+        //TODO TESTING
+        ssid ="Get in the WAN";
         CheckBox requiresPassword = Ui.findView(this, io.particle.android.sdk.devicesetup.R.id.network_requires_password);
         ScanApCommand.Scan scan;
         if (requiresPassword.isChecked()) {
