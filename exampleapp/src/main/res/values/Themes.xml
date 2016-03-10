@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ParticleSetupThemeExtended" parent="ParticleSetupTheme">
+        <item name="colorAccent">@android:color/white</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+
+</resources>

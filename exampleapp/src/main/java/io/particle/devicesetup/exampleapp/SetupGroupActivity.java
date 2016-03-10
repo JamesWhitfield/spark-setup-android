@@ -1,13 +1,10 @@
 package io.particle.devicesetup.exampleapp;
 
-import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 
-import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
 import io.particle.android.sdk.devicesetup.ui.RequiresWifiScansActivity;
 import io.particle.android.sdk.utils.WiFi;
 
@@ -21,7 +18,7 @@ public class SetupGroupActivity extends RequiresWifiScansActivity implements Pas
     ApplicationController applicationController;
     FragmentManager fragmentManager;
     Fragment passwordFragment;
-    ConnectingGroupFragment connectingGroupFragment;
+    ConnectGroupItemsFragment connectingGroupFragment;
     String password;
 
 
@@ -56,12 +53,12 @@ public class SetupGroupActivity extends RequiresWifiScansActivity implements Pas
             //begin connecting setup
 //            startActivity(ConnectingActivity.buildIntent(this, softApSSID, selectedNetwork.scan));
             if (savedInstanceState != null) {
-                connectingGroupFragment = (ConnectingGroupFragment) getSupportFragmentManager().findFragmentByTag(CONNECT_FRAMENT_TAG);
+                connectingGroupFragment = (ConnectGroupItemsFragment) getSupportFragmentManager().findFragmentByTag(CONNECT_FRAMENT_TAG);
             } else {
 
                 fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                connectingGroupFragment = ConnectingGroupFragment.newInstance();
+                connectingGroupFragment = ConnectGroupItemsFragment.newInstance();
                 fragmentTransaction.add(R.id.fragmentContainer, connectingGroupFragment, CONNECT_FRAMENT_TAG);
                 fragmentTransaction.commit();
             }
@@ -79,7 +76,7 @@ public class SetupGroupActivity extends RequiresWifiScansActivity implements Pas
     public void replaceFragment() {
 
 
-        connectingGroupFragment = ConnectingGroupFragment.newInstance(password);
+        connectingGroupFragment = ConnectGroupItemsFragment.newInstance(password);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, connectingGroupFragment);
         transaction.addToBackStack(null);
