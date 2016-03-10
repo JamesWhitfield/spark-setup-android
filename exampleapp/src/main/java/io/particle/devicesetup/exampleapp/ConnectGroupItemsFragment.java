@@ -189,6 +189,12 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cleanUp();
+    }
+
     private void beginConnectingDevices() {
 
         WifiNetwork wifiNetwork = wifiNetworkArrayList.get(0);

@@ -60,9 +60,12 @@ public class ConnectToPhotonManager implements ConnectToAp.Client{
 
     public void destroy() {
 
-        connectToApTask.cancel(false);
-        connectToApTask = null;
-
+        if(connectToApTask != null) {
+            connectToApTask.cancel(true);
+            connectToApTask = null;
+        }
+        softAPConfigRemover.removeAllSoftApConfigs();
+        softAPConfigRemover.reenableWifiNetworks();
     }
 
     public interface FragmentPassBack{
@@ -207,17 +210,19 @@ public class ConnectToPhotonManager implements ConnectToAp.Client{
             @Override
             protected void onPostExecute(SetupStepException error) {
                 connectToApTask = null;
-                if (error == null) {
-                    // no exceptions thrown, huzzah
-                    fragmentPassBack.photonConnected(currentSSID);
+                if(!this.isCancelled()) {
+                    if (error == null) {
+                        // no exceptions thrown, huzzah
+                        fragmentPassBack.photonConnected(currentSSID);
 
-                } else if (error instanceof DeviceAlreadyClaimed) {
-                    onDeviceClaimedByOtherUser();
+                    } else if (error instanceof DeviceAlreadyClaimed) {
+                        onDeviceClaimedByOtherUser();
 
-                } else {
-                    // nope, do it all over again.
-                    // FIXME: this might be a good time to display some feedback...
-                    startConnectWorker();
+                    } else {
+                        // nope, do it all over again.
+                        // FIXME: this might be a good time to display some feedback...
+                        startConnectWorker();
+                    }
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
