@@ -14,4 +14,11 @@ public class ApplicationController extends Application{
 
     public ArrayList<WifiNetwork> photonSetupGroup = new ArrayList<>();
     public ScanAPCommandResult selectedNetwork;
+
+    public void resetValues(){
+
+
+        photonSetupGroup.clear();
+        selectedNetwork = null;
+    }
 }

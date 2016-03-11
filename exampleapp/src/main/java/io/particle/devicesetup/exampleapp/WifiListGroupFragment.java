@@ -96,6 +96,8 @@ public class WifiListGroupFragment<T extends WifiNetwork> extends ListFragment
         getLoaderManager().initLoader(getClass().hashCode(), null, this);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 //        getListView().setSelector(R.drawable.rowbackgroundselector);
+        ((ApplicationController)getActivity().getApplication()).resetValues();
+
     }
 
     @Override

@@ -80,6 +80,8 @@ public class ConnectToPhotonManager implements ConnectToAp.Client{
         void photonConnected(String currentSSID);
 
         void moveToNext();
+
+        void connectionFailed(String errorMsg);
     }
 
     private ConnectToAp connectToAp;
@@ -161,7 +163,9 @@ public class ConnectToPhotonManager implements ConnectToAp.Client{
         String errorMsg = Phrase.from(context, io.particle.android.sdk.devicesetup.R.string.unable_to_connect_to_soft_ap)
                 .put("device_name", context.getString(io.particle.android.sdk.devicesetup.R.string.device_name))
                 .format().toString();
-        fragmentPassBack.setItemMessage(errorMsg);
+
+        fragmentPassBack.connectionFailed(errorMsg);
+//        fragmentPassBack.setItemMessage(errorMsg);
         fragmentPassBack.hideProgress();
         //TODO MOVE TO NEXT ITEM
 

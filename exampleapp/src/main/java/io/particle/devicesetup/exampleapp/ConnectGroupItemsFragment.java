@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,11 +29,7 @@ import java.util.List;
 
 import io.particle.android.sdk.devicesetup.commands.ScanApCommand;
 import io.particle.android.sdk.devicesetup.model.WifiNetwork;
-import io.particle.android.sdk.devicesetup.ui.ConnectToApFragment;
 import io.particle.android.sdk.utils.TLog;
-import io.particle.android.sdk.utils.ui.Ui;
-import me.zhanghai.android.materialprogressbar.IndeterminateHorizontalProgressDrawable;
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
  * Created by jwhit on 10/03/2016.
@@ -49,7 +44,7 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
     private TextView tvCurrentDevice;
     private ScanApCommand.Scan networkToConnectTo;
     private ListView lvResults;
-    List<String> your_array_list;
+    List<String> resultsArray;
     private ArrayAdapter<String> arrayAdapter;
     private String password;
     private WifiManager wifiManager;
@@ -65,6 +60,9 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
     public static final int RESULT_FAILURE_CONFIGURE = 4;
     public static final int RESULT_FAILURE_NO_DISCONNECT = 5;
     public static final int RESULT_FAILURE_LOST_CONNECTION_TO_DEVICE = 6;
+
+    int devicesToSetup = 0 ;
+    int devicesSetupSuccess = 0;
 
     public static ConnectGroupItemsFragment newInstance() {
 
@@ -112,14 +110,15 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
         lvResults = (ListView) view.findViewById(R.id.lvResults);
         btnCancel = (Button) view.findViewById(R.id.btnCancel);
 
-        tvConfig.setText("Photons to setup: " + applicationController.photonSetupGroup.size() + "\n"
+        devicesToSetup = applicationController.photonSetupGroup.size();
+        tvConfig.setText("Photons to setup: " + devicesToSetup + "\n"
                 + "Target Network: " + applicationController.selectedNetwork.getSsid());
 
-        your_array_list = new ArrayList<String>();
+        resultsArray = new ArrayList<String>();
         arrayAdapter = new ArrayAdapter<String>(
                 getContext(),
                 android.R.layout.simple_list_item_1,
-                your_array_list );
+                resultsArray);
         lvResults.setAdapter(arrayAdapter);
 
 
@@ -179,9 +178,12 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
 
             beginConnectingDevices();
         }else{
-            tvCurrentDevice.setText("");
+
+            groupSetupComplete();
         }
     }
+
+
 
     @Override
     public void onStart() {
@@ -193,6 +195,22 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
     public void onDestroy() {
         super.onDestroy();
         cleanUp();
+    }
+
+    private void groupSetupComplete(){
+
+
+        tvCurrentDevice.setText("Results: " + devicesSetupSuccess + " out of " + devicesToSetup + " setup success");
+        btnCancel.setText("Finish");
+        log.d("Group setup complete");
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+                applicationController.resetValues();
+            }
+        });
+
     }
 
     private void beginConnectingDevices() {
@@ -240,10 +258,26 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
 
     @Override
     public void deviceSetupComplete(int resultCode) {
+        //Complete does not mean success
         hideProgress();
 
+        if(resultCode <3){
+            devicesSetupSuccess ++;
+        }
         Pair<? extends CharSequence, CharSequence> resultStrings = buildUiStringPair(resultCode);
-        your_array_list.add(resultStrings.first + "\n" + resultStrings.second);
+        resultsArray.add(resultStrings.first + "\n" + resultStrings.second);
+        arrayAdapter.notifyDataSetChanged();
+
+        moveToNext();
+
+    }
+
+
+    @Override
+    public void connectionFailed(String errorMsg) {
+        hideProgress();
+        String ssid = wifiNetworkArrayList.get(0).getSsid();
+        resultsArray.add(ssid + ": " + errorMsg);
         arrayAdapter.notifyDataSetChanged();
 
         moveToNext();

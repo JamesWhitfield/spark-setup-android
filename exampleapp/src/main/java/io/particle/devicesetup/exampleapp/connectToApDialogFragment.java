@@ -10,7 +10,7 @@ import com.squareup.phrase.Phrase;
 /**
  * Created by jwhit on 09/03/2016.
  */
-public class ConnectToApDialogFragment extends DialogFragment {
+public class connectToApDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

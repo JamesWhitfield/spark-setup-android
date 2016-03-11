@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +15,9 @@
             android:id="@+id/tvconfig"
             android:text="Config"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@android:style/TextAppearance"
+            />
 
         <TextView
             android:text="Current Device"
@@ -22,6 +25,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvconfig"
+            style="@android:style/TextAppearance.Holo.Medium"
+            android:layout_marginTop="8dp"
             />
 
         <ProgressBar
@@ -31,6 +36,7 @@
             android:indeterminateOnly="true"
             android:layout_below="@+id/tvCurrentDevice"
             style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_marginBottom="8dp"
             />
 
 
@@ -44,8 +50,6 @@
 
         <Button
             android:id="@+id/btnCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             style="@style/SparkButton"
             android:text="@string/cancel"
             android:layout_gravity="center_horizontal"
