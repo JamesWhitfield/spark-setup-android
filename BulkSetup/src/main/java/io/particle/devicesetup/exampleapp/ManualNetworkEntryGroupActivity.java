@@ -22,7 +22,7 @@ public class ManualNetworkEntryGroupActivity extends ManualNetworkEntryActivity 
     public void onConnectClicked(View view) {
         String ssid = Ui.getText(this, io.particle.android.sdk.devicesetup.R.id.network_name, true);
         //TODO TESTING
-        ssid ="SKYA6D31";
+//        ssid ="SKYA6D31";
         CheckBox requiresPassword = Ui.findView(this, io.particle.android.sdk.devicesetup.R.id.network_requires_password);
         ScanApCommand.Scan scan;
         if (requiresPassword.isChecked()) {
