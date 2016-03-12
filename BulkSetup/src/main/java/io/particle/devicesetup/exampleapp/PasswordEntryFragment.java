@@ -145,7 +145,7 @@ public class PasswordEntryFragment extends Fragment {
     public void onConnectClicked(View view) {
         String secret = etPasswordBox.getText().toString();
         //TODO TESTING
-        secret = "jamesisthebest";
+        secret = "BUPFUFTY";
         mCallback.setPassword(secret);
         mCallback.replaceFragment();
 

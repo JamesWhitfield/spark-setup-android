@@ -191,6 +191,7 @@ public class DiscoverGroupDeviceActivity extends RequiresWifiScansActivity
                 wifiNetworkArrayList.add(wifiNetwork);
             }
         }
+        ((ApplicationController)getApplication()).photonSetupGroup.clear();
         ((ApplicationController)getApplication()).photonSetupGroup.addAll(wifiNetworkArrayList);
     }
 

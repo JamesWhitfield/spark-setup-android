@@ -2,11 +2,7 @@ package io.particle.devicesetup.exampleapp;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
@@ -39,7 +35,6 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
     private ArrayList<WifiNetwork> wifiNetworkArrayList;
     ApplicationController applicationController;
 
-    private String networkSecretPlaintext;
     private Button btnCancel;
     private TextView tvCurrentDevice;
     private ScanApCommand.Scan networkToConnectTo;
@@ -63,6 +58,8 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
 
     int devicesToSetup = 0 ;
     int devicesSetupSuccess = 0;
+    private ProgressBar progressBarTotal;
+    private int progressIncrement;
 
     public static ConnectGroupItemsFragment newInstance() {
 
@@ -87,6 +84,15 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
         wifiNetworkArrayList.addAll(applicationController.photonSetupGroup);
         wifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
         networkToConnectTo = applicationController.selectedNetwork.scan;
+        devicesToSetup = applicationController.photonSetupGroup.size();
+        resultsArray = new ArrayList<String>();
+        arrayAdapter = new ArrayAdapter<String>(
+                getContext(),
+                android.R.layout.simple_list_item_1,
+                resultsArray);
+
+        //Progress increments
+        progressIncrement = 100/devicesToSetup;
     }
 
     @Override
@@ -100,25 +106,27 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
 
         TextView tvConfig = (TextView) view.findViewById(R.id.tvconfig);
         progressBar = (ProgressBar) view.findViewById(R.id.pbProgress);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.GREEN));
-        }else{
-            progressBar.getIndeterminateDrawable().setColorFilter(
-                    Color.GREEN, PorterDuff.Mode.MULTIPLY);
-        }
+        progressBarTotal = (ProgressBar) view.findViewById(R.id.pbTotal);
+
+
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.GREEN));
+//        }else{
+//            progressBar.getIndeterminateDrawable().setColorFilter(
+//                    Color.GREEN, PorterDuff.Mode.MULTIPLY);
+//        }
+
         tvCurrentDevice = (TextView) view.findViewById(R.id.tvCurrentDevice);
         lvResults = (ListView) view.findViewById(R.id.lvResults);
         btnCancel = (Button) view.findViewById(R.id.btnCancel);
 
-        devicesToSetup = applicationController.photonSetupGroup.size();
+
         tvConfig.setText("Photons to setup: " + devicesToSetup + "\n"
                 + "Target Network: " + applicationController.selectedNetwork.getSsid());
 
-        resultsArray = new ArrayList<String>();
-        arrayAdapter = new ArrayAdapter<String>(
-                getContext(),
-                android.R.layout.simple_list_item_1,
-                resultsArray);
+
+
         lvResults.setAdapter(arrayAdapter);
 
 
@@ -200,7 +208,7 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
     private void groupSetupComplete(){
 
 
-        tvCurrentDevice.setText("Results: " + devicesSetupSuccess + " out of " + devicesToSetup + " setup success");
+        tvCurrentDevice.setText("Results: " + devicesSetupSuccess + " out of " + devicesToSetup + " successful");
         btnCancel.setText("Finish");
         log.d("Group setup complete");
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -268,8 +276,8 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
         resultsArray.add(resultStrings.first + "\n" + resultStrings.second);
         arrayAdapter.notifyDataSetChanged();
 
+        progressBarTotal.setProgress(progressBarTotal.getProgress() + progressIncrement);
         moveToNext();
-
     }
 
 
@@ -279,7 +287,7 @@ public class ConnectGroupItemsFragment extends Fragment implements ConnectToPhot
         String ssid = wifiNetworkArrayList.get(0).getSsid();
         resultsArray.add(ssid + ": " + errorMsg);
         arrayAdapter.notifyDataSetChanged();
-
+        progressBarTotal.setProgress(progressBarTotal.getProgress() + progressIncrement);
         moveToNext();
 
     }

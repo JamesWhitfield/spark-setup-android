@@ -30,12 +30,20 @@
             />
 
         <ProgressBar
+            android:id="@+id/pbTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvCurrentDevice"
+            style="@style/CustomProgressBarHorizontal"
+            />
+
+        <ProgressBar
             android:id="@+id/pbProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/pbTotal"
             android:indeterminateOnly="true"
-            android:layout_below="@+id/tvCurrentDevice"
-            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            style="@style/CustomProgressBarHorizontal"
             android:layout_marginBottom="8dp"
             />
 
